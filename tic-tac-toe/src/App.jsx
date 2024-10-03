@@ -1,6 +1,11 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
 import './App.css';
+import {
+  Route,
+  BrowserRouter as Router,
+  Routes
+} from "react-router-dom";
 
 function Square({ value, onSquareClick, highlight }) {
   return (
@@ -36,7 +41,7 @@ function Board({ squares, onSquareClick, winnerInfo }) {
   return <>{board}</>;
 }
 
-export default function App() {
+export function Game() {
   const [history, setHistory] = useState([{ squares: Array(9).fill(null), location: null }]);
   const [currentMove, setCurrentMove] = useState(0);
   const [isAscending, setIsAscending] = useState(true);
@@ -134,4 +139,14 @@ function getLocation(index) {
   const row = Math.floor(index / 3);
   const col = index % 3;
   return { row, col };
+}
+
+export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={ <Game/> }/>
+      </Routes>
+    </Router>
+  );
 }
