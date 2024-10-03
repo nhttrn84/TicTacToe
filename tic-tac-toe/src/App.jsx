@@ -36,7 +36,7 @@ function Board({ squares, onSquareClick, winnerInfo }) {
   return <>{board}</>;
 }
 
-export default function Game() {
+export default function App() {
   const [history, setHistory] = useState([{ squares: Array(9).fill(null), location: null }]);
   const [currentMove, setCurrentMove] = useState(0);
   const [isAscending, setIsAscending] = useState(true);
