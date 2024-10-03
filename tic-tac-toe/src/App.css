@@ -40,3 +40,73 @@
 .read-the-docs {
   color: #888;
 }
+
+
+.game-container {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  max-width: 800px;
+  margin: auto;
+  background-color: rgb(16, 172, 156);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.board-row {
+  display: flex;
+  padding: 5px;
+}
+
+.square {
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 5px;
+  border-style: solid;
+  border-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+}
+
+.square.highlight {
+  background-color: yellow;
+}
+
+.status {
+  margin-bottom: 10px;
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.reset-button {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+}
+
+.game-info ol {
+  padding-left: 20px;
+  color: rgb(136, 13, 13);
+  font-weight: bold;
+}
+
+.game-info div {
+  color: rgb(136, 13, 13);
+  font-weight: bold;
+}
+
+.game-info button {
+  margin: 5px 0;
+}
