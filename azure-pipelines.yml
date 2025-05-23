@@ -9,17 +9,62 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '20.x'
-  displayName: 'Install Node.js'
+stages:
+- stage: Build
+  jobs:
+  - job: BuildJob
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '20.x'
+      displayName: 'Install Node.js'
 
-- script: |
-    cd tic-tac-toe/
-    echo "Current directory is now $(pwd)"
-    npm install
-    echo "Install package successfully"
-    npm run build
-    echo "Build successfully"
-  displayName: 'npm install and build'
+    - script: |
+        cd tic-tac-toe/
+        echo "Current directory is now $(pwd)"
+        npm install
+        echo "Install package successfully"
+        npm run build
+        echo "Build successfully"
+      displayName: 'npm install and build'
+        
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: 'tic-tac-toe/build'  # Adjust this path to your build output
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        replaceExistingArchive: true
+      displayName: 'Archive build files'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+      displayName: 'Publish artifacts'
+
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+  - deployment: DeployToVM
+    environment:
+      name: 'New environment'
+      resourceType: VirtualMachine
+      tags: 'web'  # Optional: if you've tagged your VMs
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+            
+          - script: |
+              # Extract the zip file
+              unzip $(Pipeline.Workspace)/drop/$(Build.BuildId).zip -d /var/www/html/tic-tac-toe
+              
+              # If you need to restart a service (e.g., nginx)
+              # sudo systemctl restart nginx
+              
+              echo "Deployment completed successfully"
+            displayName: 'Deploy to VM'
