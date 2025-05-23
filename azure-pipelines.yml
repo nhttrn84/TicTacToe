@@ -26,8 +26,6 @@ stages:
         echo "Install package successfully"
         npm run build
         echo "Build successfully"
-        
-        # Debug: List directories to find where build output went
         echo "Directory structure after build:"
         ls -la
       displayName: 'npm install and build'
@@ -48,8 +46,6 @@ stages:
         publishLocation: 'Container'
       displayName: 'Publish artifacts'
 
-
-
 - stage: Deploy
   dependsOn: Build
   jobs:
@@ -67,9 +63,5 @@ stages:
           - script: |
               # Extract the zip file
               unzip $(Pipeline.Workspace)/drop/$(Build.BuildId).zip -d /var/www/html/tic-tac-toe
-              
-              # If you need to restart a service (e.g., nginx)
-              # sudo systemctl restart nginx
-              
               echo "Deployment completed successfully"
             displayName: 'Deploy to VM'
