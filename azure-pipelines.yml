@@ -16,6 +16,10 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
+    cd tic-tac-toe/
+    echo "Current directory is now $(pwd)"
     npm install
+    echo "Install package successfully"
     npm run build
+    echo "Build successfully"
   displayName: 'npm install and build'
