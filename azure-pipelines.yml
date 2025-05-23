@@ -50,26 +50,26 @@ stages:
 
 
 
-# - stage: Deploy
-#   dependsOn: Build
-#   jobs:
-#   - deployment: DeployToVM
-#     environment:
-#       name: 'New environment'
-#       resourceType: VirtualMachine
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#           - download: current
-#             artifact: drop
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+  - deployment: DeployToVM
+    environment:
+      name: 'New environment'
+      resourceType: VirtualMachine
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
             
-#           - script: |
-#               # Extract the zip file
-#               unzip $(Pipeline.Workspace)/drop/$(Build.BuildId).zip -d /var/www/html/tic-tac-toe
+          - script: |
+              # Extract the zip file
+              unzip $(Pipeline.Workspace)/drop/$(Build.BuildId).zip -d /var/www/html/tic-tac-toe
               
-#               # If you need to restart a service (e.g., nginx)
-#               # sudo systemctl restart nginx
+              # If you need to restart a service (e.g., nginx)
+              # sudo systemctl restart nginx
               
-#               echo "Deployment completed successfully"
-#             displayName: 'Deploy to VM'
+              echo "Deployment completed successfully"
+            displayName: 'Deploy to VM'
