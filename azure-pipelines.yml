@@ -30,59 +30,45 @@ stages:
         # Debug: List directories to find where build output went
         echo "Directory structure after build:"
         ls -la
-        
-        # If there's a dist, build, or out directory, show its contents
-        if [ -d "build" ]; then
-          echo "Contents of build directory:"
-          ls -la build
-        elif [ -d "dist" ]; then
-          echo "Contents of dist directory:"
-          ls -la dist
-        elif [ -d "out" ]; then
-          echo "Contents of out directory:"
-          ls -la out
-        else
-          echo "No standard build output directory found"
-        fi
       displayName: 'npm install and build'
 
-#     - task: ArchiveFiles@2
-#       inputs:
-#         rootFolderOrFile: 'tic-tac-toe/build'  # Adjust this path to your build output
-#         includeRootFolder: false
-#         archiveType: 'zip'
-#         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-#         replaceExistingArchive: true
-#       displayName: 'Archive build files'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: 'tic-tac-toe/dist'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        replaceExistingArchive: true
+      displayName: 'Archive build files'
 
-#     - task: PublishBuildArtifacts@1
-#       inputs:
-#         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#         ArtifactName: 'drop'
-#         publishLocation: 'Container'
-#       displayName: 'Publish artifacts'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+      displayName: 'Publish artifacts'
 
-# - stage: Deploy
-#   dependsOn: Build
-#   jobs:
-#   - deployment: DeployToVM
-#     environment:
-#       name: 'New environment'
-#       resourceType: VirtualMachine
-#       tags: 'web'  # Optional: if you've tagged your VMs
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#           - download: current
-#             artifact: drop
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+  - deployment: DeployToVM
+    environment:
+      name: 'New environment'
+      resourceType: VirtualMachine
+      tags: 'web'  # Optional: if you've tagged your VMs
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
             
-#           - script: |
-#               # Extract the zip file
-#               unzip $(Pipeline.Workspace)/drop/$(Build.BuildId).zip -d /var/www/html/tic-tac-toe
+          - script: |
+              # Extract the zip file
+              unzip $(Pipeline.Workspace)/drop/$(Build.BuildId).zip -d /var/www/html/tic-tac-toe
               
-#               # If you need to restart a service (e.g., nginx)
-#               # sudo systemctl restart nginx
+              # If you need to restart a service (e.g., nginx)
+              # sudo systemctl restart nginx
               
-#               echo "Deployment completed successfully"
-#             displayName: 'Deploy to VM'
+              echo "Deployment completed successfully"
+            displayName: 'Deploy to VM'
