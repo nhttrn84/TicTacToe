@@ -60,8 +60,13 @@ stages:
           - download: current
             artifact: drop
             
-          - script: |
-              # Extract the zip file
-              unzip $(Pipeline.Workspace)/drop/$(Build.BuildId).zip -d /var/www/html/tic-tac-toe
-              echo "Deployment completed successfully"
+          - powershell: |
+              if (-not (Test-Path -Path "C:\inetpub\wwwroot\tic-tac-toe")) {
+                  New-Item -ItemType Directory -Path "C:\inetpub\wwwroot\tic-tac-toe" -Force
+              }
+              
+              Add-Type -AssemblyName System.IO.Compression.FileSystem
+              [System.IO.Compression.ZipFile]::ExtractToDirectory("$(Pipeline.Workspace)\drop\$(Build.BuildId).zip", "C:\inetpub\wwwroot\tic-tac-toe", $true)
+              
+              Write-Host "Deployment completed successfully"
             displayName: 'Deploy to VM'
