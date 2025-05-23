@@ -46,27 +46,15 @@ stages:
         publishLocation: 'Container'
       displayName: 'Publish artifacts'
 
+
 - stage: Deploy
   dependsOn: Build
   jobs:
-  - deployment: DeployToVM
-    environment:
-      name: 'New environment'
-      resourceType: VirtualMachine
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: current
-            artifact: drop
-            
-          - powershell: |
-              if (-not (Test-Path -Path "C:\inetpub\wwwroot\tic-tac-toe")) {
-                  New-Item -ItemType Directory -Path "C:\inetpub\wwwroot\tic-tac-toe" -Force
-              }
-              
-              Add-Type -AssemblyName System.IO.Compression.FileSystem
-              [System.IO.Compression.ZipFile]::ExtractToDirectory("$(Pipeline.Workspace)\drop\$(Build.BuildId).zip", "C:\inetpub\wwwroot\tic-tac-toe", $true)
-              
-              Write-Host "Deployment completed successfully"
-            displayName: 'Deploy to VM'
+  - job: DeployJob
+    steps:
+    - task: KubernetesManifest@1
+      inputs:
+        action: 'deploy'
+        connectionType: 'kubernetesServiceConnection'
+        kubernetesServiceConnection: 'New environment-tdin-1747975965503'
+        namespace: 'tdin'
